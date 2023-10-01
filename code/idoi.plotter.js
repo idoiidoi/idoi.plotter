@@ -11,6 +11,7 @@ var mouseState = { lastY: 0, lastRightClickY: 0 };
 var autoScaling = false;
 var lineWidth = 1.0;  // Default line width
 var windowSize = 3;  // default 3
+var interpolation_v = false;
 
 function autoscale(mode) {
     autoScaling = !!mode;
