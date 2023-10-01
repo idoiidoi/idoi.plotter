@@ -1,9 +1,10 @@
 # idoi.plotter
 
 This repository offers a tool designed for visualizing time series data, leveraging the capabilities of JSUI within the Max environment.
+For example, it is intended to be used to display data received from multiple external sensors in real-time.
 ## Features
 
-- **Time Series Visualization**: Stream data into the tool, and it'll render a 2D graph in real-time.
+- **Time Series Visualization**: Stream data into the object, and it'll render a time series graph in real-time.
 - **Interactivity**: Mouse-based controls for zooming in/out and moving the graph vertically.
 - **Auto-Scaling**: Automatically adjust the Y-axis bounds based on incoming data.
 - **Moving Averages with Adjustable Window**: Display smoothed data using moving averages. The size of the averaging window can be customized.
