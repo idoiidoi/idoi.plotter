@@ -1,5 +1,11 @@
 # idoi.plotter
 
+> **Moved:** idoi.plotter is now part of [idoi.sensorkit](https://github.com/idoiidoi/idoi.sensorkit),
+> a Max 9 package with idoi.calibrate, idoi.plotter, idoi.datarecorder and idoi.dataplayer.
+> This repository is archived and no longer updated.
+> In sensorkit the plotter's `background` attribute is `bgcolor` and `label` is `channelname`
+> (v8ui boxes intercept those names).
+
 A real-time multi-channel time series plotter for Max, built on `v8ui`.
 Meant for watching streams from external sensors: send a list per frame and
 each element becomes a line.
