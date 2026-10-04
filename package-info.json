@@ -1,0 +1,10 @@
+{
+	"name": "idoi.plotter",
+	"displayname": "idoi.plotter",
+	"version": "2.0.0",
+	"author": "Itsuki Doi",
+	"description": "Real-time multi-channel time series plotter (v8ui)",
+	"website": "https://github.com/idoiidoi/idoi.plotter",
+	"max_version_min": "9.0",
+	"tags": ["visualization", "plot", "sensor", "v8ui"]
+}

@@ -1,59 +1,105 @@
 # idoi.plotter
 
-This repository offers a tool designed for visualizing time series data, leveraging the capabilities of JSUI within the Max environment.
-For example, it is intended to be used to display data received from multiple external sensors in real-time.
-## Features
+A real-time multi-channel time series plotter for Max, built on `v8ui`.
+Meant for watching streams from external sensors: send a list per frame and
+each element becomes a line.
 
-- **Time Series Visualization**: Stream data into the object, and it'll render a time series graph in real-time.
-- **Interactivity**: Mouse-based controls for zooming in/out and moving the graph vertically.
-- **Auto-Scaling**: Automatically adjust the Y-axis bounds based on incoming data.
-- **Moving Averages with Adjustable Window**: Display smoothed data using moving averages. The size of the averaging window can be customized.
-- **Interpolation Mode**: Decide whether to use raw data or smoothed data for visualization.
-- **Color Customization**: Change the color of each plotted line.
-- **Grid Lines**: Horizontal grid lines for easier data reading.
-- **Custom Line Width**: Adjust the thickness of plotted lines.
+![idoi.plotter](docs/screenshot.png)
 
-## Usage
-You can send messages to the tool using the message object. The available commands are:
+Requires **Max 9** or later (`v8ui`). The previous `jsui` version (Max 8) is
+in the git history at tag `v1-jsui`.
 
-### autoscale(mode)
+## Install
 
-Enable or disable the auto-scaling feature.
+Clone (or download) this repository into your Max packages folder and restart Max:
 
-### ybounds(min, max)
+```bash
+git clone https://github.com/idoiidoi/idoi.plotter.git ~/Documents/Max\ 9/Packages/idoi.plotter
+```
 
-Set the Y-axis bounds manually.
+Then create the object by typing into an object box:
 
-### setColor(idx, r, g, b)
+```
+v8ui @filename idoi.plotter.js
+```
 
-Change the color of a specific line.
+Option-click (Alt-click) it to open the help patch.
 
-### linewidth(newWidth)
+## Input
 
-Set the line width for plotted timeseries.
+| Message | Effect |
+| --- | --- |
+| `list` | One frame. One value per channel: `0.2 0.5 -1.3` draws three lines. |
+| `float` / `int` | One frame with a single channel. |
 
-### lineinterval(step)
+The number of channels may change while streaming. Missing values are drawn
+as gaps instead of dropping to zero.
 
-Adjust the horizontal grid line interval.
+## Attributes
 
-### windowsize(newSize)
+All attributes can be set in the inspector, as `@name value` in the object
+box, or by sending `name value`. They are saved with the patcher.
 
-Set the window size for moving averages.
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `samples` | 300 | Buffer length. The whole buffer spans the plot width, newest sample on the right. |
+| `autoscale` | 1 | Fit the Y range to the visible data. |
+| `ymin`, `ymax` | 0, 1 | Y range when `autoscale` is off. |
+| `smooth` | 1 | Trailing moving average window in samples. 1 draws raw data. |
+| `linewidth` | 1.5 | Line width in pixels. |
+| `gridx` | 100 | Vertical grid line every N samples (0 = off). Lines scroll with the data. |
+| `gridy` | 1 | Horizontal grid with Y labels. |
+| `legend` | 1 | Channel names and latest values. |
+| `names` | – | Channel names, e.g. `names accel_x accel_y accel_z`. |
+| `colors` | – | Channel colors as `r g b r g b ...` (0–1). Unset channels get distinct default colors. |
+| `background` | 1 1 1 1 | Background color (rgba). |
+| `fps` | 30 | Maximum redraw rate. Input is never blocked by drawing. |
 
-### interpolation(mode)
+## Messages
 
-Enable or disable the interpolation mode.
+| Message | Effect |
+| --- | --- |
+| `ybounds <min> <max>` | Set the Y range and turn `autoscale` off. |
+| `setcolor <ch> <r> <g> <b>` | Color of one channel (channels start at 0). |
+| `label <ch> <text>` | Name of one channel. |
+| `pause [0/1]` | Freeze the display. Incoming data is dropped while paused. No argument toggles. |
+| `clear` | Clear the data, keep the view settings. |
+| `reset` | Clear the data and turn `autoscale` back on. |
 
-### clear()
+The jsui-era messages `setColor`, `lineinterval`, `windowsize` and
+`interpolation` still work.
 
-Clear the graph and reset to default settings.
+## Output
 
-## Mouse Controls
+When the view is changed by the mouse (and once on load), the outlet sends
 
-- **Drag**: Zoom in or out vertically.
-- **Ctrl + Drag**: Move the graph up or down.
-- **Double Click**: Toggle auto-scaling on/off.
+```
+autoscale <0/1>
+ybounds <min> <max>
+```
 
-## Dependencies
+so other UI (toggles, number boxes, a second plotter) can follow.
 
-This tool requires the Max environment with sketch object support.
+## Mouse
+
+| Gesture | Effect |
+| --- | --- |
+| Drag up / down | Zoom Y around the clicked value (Shift: fine). |
+| Cmd/Ctrl + drag | Move the Y range. |
+| Double click | Toggle `autoscale`. |
+
+## Development
+
+The drawing-independent code (ring buffer, moving average, ranges, ticks) is in
+`javascript/idoi.plotter.core.js` and has unit tests that run in plain node:
+
+```bash
+node --test test/*.test.js
+```
+
+The help patch is generated by `tools/make_help.py`; edit that script instead
+of the `.maxhelp` file and run `python3 tools/make_help.py`.
+
+## License
+
+MIT
